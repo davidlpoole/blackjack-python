@@ -106,16 +106,19 @@ def players_turn(dealer: Hand, player: Hand):
     player_stands = False
     while not (player_stands or player.blackjack or player.bust or dealer.blackjack):
         strategy_table(dealer, player)
-        inp = input("Hit? Y/[N]: ")
-        # TODO: support for double down and split user actions
-        if len(inp) != 0 and (inp[0].upper() == "H" or inp[0].upper() == "Y"):
+        inp = input("[H]it, [S]tand, or [D]ouble?: ")
+        # TODO: add support for split
+        if len(inp) != 0 and (inp[0].upper() == "H"):
             player.add_card(deck.deal())
             print(player)
             if player.value == 21:
                 player_stands = True
-        else:
+        elif len(inp) != 0 and (inp[0].upper() == "D"):
+            player.add_card(deck.deal())
+            print(player)
             player_stands = True
-
+        elif len(inp) != 0 and (inp[0].upper() == "S"):
+            player_stands = True
 
 def dealers_turn(dealer: Hand):
     dealer_stands = False
