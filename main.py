@@ -48,18 +48,22 @@ class Hand:
 
     def calc_hand(self):
         self.value = 0
+
+        aces = []
         for card in self.cards:
             rank = card[0]
-
             if rank in "TJQK":
                 self.value += 10
             elif rank != "A":
                 self.value += int(rank)
             else:
-                if self.value <= 10:
-                    self.value += 11
-                else:
-                    self.value += 1
+                aces.append(card)
+
+        for card in aces:
+            if self.value >= 11:
+                self.value += 1
+            else:
+                self.value += 11
 
         if self.value > 21:
             self.bust = True
