@@ -70,6 +70,12 @@ class Hand:
         elif self.value == 21:
             self.blackjack = True
 
+    def clear_hand(self):
+        self.cards = []
+        self.value = 0
+        self.blackjack = False
+        self.bust = False
+
 
 def strategy_table(dealer: Hand, player: Hand):
     df = pd.read_csv('Blackjack_strategy.csv', index_col=0)
