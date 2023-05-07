@@ -1,7 +1,7 @@
 import random
 
 SUITS = ['♠', '♦', '♥', '♣']
-RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
 
 
 class Deck:
@@ -49,7 +49,7 @@ class Hand:
         for card in self.cards:
             rank = card[0]
 
-            if rank in "JQK":
+            if rank in "TJQK":
                 self.value += 10
             elif rank != "A":
                 self.value += int(rank)
