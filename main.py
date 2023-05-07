@@ -90,9 +90,9 @@ def strategy_table(dealer: Hand, player: Hand):
     ploc = ""
     if player.blackjack:
         print("S")
-    elif ranks[0] == ranks[1]:
+    elif len(player.cards) == 2 and ranks[0] == ranks[1]:
         ploc = ranks[0] + ranks[1]
-    elif ranks[1] == "A":
+    elif len(player.cards) == 2 and ranks[1] == "A":
         ploc = ranks[1] + ranks[0]
     else:
         ploc = str(player.value)
