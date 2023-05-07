@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     player_stands = False
     while not (player_stands or player.blackjack or player.bust or dealer.blackjack):
-        inp = input("[H]it? ")
+        inp = input("Hit? Y/[N]: ")
         # TODO: support for double down and split user actions
         if len(inp) != 0 and (inp[0].upper() == "H" or inp[0].upper() == "Y"):
             player.add_card(deck.deal())
