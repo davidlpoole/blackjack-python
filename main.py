@@ -123,8 +123,8 @@ if __name__ == '__main__':
             player_stands = True
 
     dealer_stands = False
+    print(dealer)
     while not (dealer_stands or player.bust or dealer.blackjack or dealer.bust):
-        print(dealer)
         if dealer.value >= 17:
             dealer_stands = True
         elif dealer.value < 17:
