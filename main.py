@@ -1,7 +1,9 @@
 import random
+import pandas as pd
 
 SUITS = ['♠', '♦', '♥', '♣']
 RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
+STRATEGY_CODE = {'H': 'Hit', 'S': 'Stand', 'D': 'Double', 'P': 'Split', }
 
 
 class Deck:
@@ -65,6 +67,35 @@ class Hand:
             self.blackjack = True
 
 
+def strategy_table(dealer: Hand, player: Hand):
+    df = pd.read_csv('Blackjack_strategy.csv', index_col=0)
+    # print(df)
+    # if player has an ace
+    ranks = []
+    for card in player.cards:
+        if card[0] in "JQK":
+            ranks.append("T")
+        else:
+            ranks.append(card[0])
+    ranks.sort()
+
+    dloc = dealer.cards[0][0]
+    if dloc in "JQK":
+        dloc = "T"
+
+    ploc = ""
+    if player.blackjack:
+        print("S")
+    elif ranks[0] == ranks[1]:
+        ploc = ranks[0] + ranks[1]
+    elif ranks[1] == "A":
+        ploc = ranks[1] + ranks[0]
+    else:
+        ploc = str(player.value)
+
+    print(ranks, "=", STRATEGY_CODE[df.loc[ploc][dloc]])
+
+
 if __name__ == '__main__':
     deck = Deck(4)
     deck.shuffle()
@@ -80,6 +111,7 @@ if __name__ == '__main__':
 
     player_stands = False
     while not (player_stands or player.blackjack or player.bust or dealer.blackjack):
+        strategy_table(dealer, player)
         inp = input("Hit? Y/[N]: ")
         # TODO: support for double down and split user actions
         if len(inp) != 0 and (inp[0].upper() == "H" or inp[0].upper() == "Y"):
