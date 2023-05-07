@@ -85,12 +85,14 @@ if __name__ == '__main__':
         if len(inp) != 0 and (inp[0].upper() == "H" or inp[0].upper() == "Y"):
             player.add_card(deck.deal())
             print(player)
+            if player.value == 21:
+                player_stands = True
         else:
             player_stands = True
 
-    print(dealer)
     dealer_stands = False
-    while not (dealer_stands or dealer.blackjack or dealer.bust):
+    while not (dealer_stands or player.bust or dealer.blackjack or dealer.bust):
+        print(dealer)
         if dealer.value >= 17:
             dealer_stands = True
         elif dealer.value < 17:
@@ -98,11 +100,11 @@ if __name__ == '__main__':
             print(dealer)
 
     # TODO: refactor the following
-    if player.blackjack and not dealer.blackjack:
+    if player.bust:
+        print("Lose")
+    elif player.blackjack and not dealer.blackjack:
         print("Win")
     elif dealer.blackjack and not player.blackjack:
-        print("Lose")
-    elif player.bust:
         print("Lose")
     elif player.value <= 21 and dealer.bust:
         print("Win")
