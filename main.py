@@ -93,22 +93,12 @@ def strategy_table(dealer: Hand, player: Hand):
     else:
         ploc = str(player.value)
 
-    print(ranks, "=", STRATEGY_CODE[df.loc[ploc][dloc]])
+    strat = STRATEGY_CODE[df.loc[ploc][dloc]]
+
+    print(f"{ploc} vs dealer's {dloc} = {strat}")
 
 
-if __name__ == '__main__':
-    deck = Deck(4)
-    deck.shuffle()
-    player = Hand("Player")
-    dealer = Hand("Dealer")
-
-    for i in range(2):
-        dealer.add_card(deck.deal())
-        player.add_card(deck.deal())
-
-    print("Dealer:", dealer.cards[0])
-    print(player)
-
+def players_turn(dealer: Hand, player: Hand):
     player_stands = False
     while not (player_stands or player.blackjack or player.bust or dealer.blackjack):
         strategy_table(dealer, player)
@@ -122,6 +112,8 @@ if __name__ == '__main__':
         else:
             player_stands = True
 
+
+def dealers_turn(dealer: Hand):
     dealer_stands = False
     print(dealer)
     while not (dealer_stands or player.bust or dealer.blackjack or dealer.bust):
@@ -131,6 +123,8 @@ if __name__ == '__main__':
             dealer.add_card(deck.deal())
             print(dealer)
 
+
+def print_game_result(dealer: Hand, player: Hand):
     # TODO: refactor the following
     if player.bust:
         print("Lose")
@@ -148,3 +142,22 @@ if __name__ == '__main__':
         print("Lose")
     else:
         print("Error: Missed case")
+
+
+if __name__ == '__main__':
+    deck = Deck(4)
+    deck.shuffle()
+    player = Hand("Player")
+    dealer = Hand("Dealer")
+
+    for i in range(2):
+        dealer.add_card(deck.deal())
+        player.add_card(deck.deal())
+
+    print("Dealer:", dealer.cards[0])
+    print(player)
+
+    players_turn(dealer, player)
+    dealers_turn(dealer)
+
+    print_game_result(dealer, player)
