@@ -103,9 +103,9 @@ def strategy_table(dealer: Hand, player: Hand):
     else:
         ploc = str(player.value)
 
-    strat = STRATEGY_CODE[df.loc[ploc][dloc]]
-
-    print(f"{ploc} vs dealer's {dloc} = {strat}")
+    strat = df.loc[ploc][dloc]
+    print(f"{ploc} vs dealer's {dloc} = {STRATEGY_CODE[strat]}")
+    return strat
 
 
 def players_turn(dealer: Hand, player: Hand):
@@ -126,6 +126,7 @@ def players_turn(dealer: Hand, player: Hand):
         elif len(inp) != 0 and (inp[0].upper() == "S"):
             player_stands = True
 
+
 def dealers_turn(dealer: Hand):
     dealer_stands = False
     print(dealer)
@@ -141,20 +142,28 @@ def print_game_result(dealer: Hand, player: Hand):
     # TODO: refactor the following
     if player.bust:
         print("Lose")
+        return -1
     elif player.blackjack and not dealer.blackjack:
         print("Win")
+        return 1
     elif dealer.blackjack and not player.blackjack:
         print("Lose")
+        return -1
     elif player.value <= 21 and dealer.bust:
         print("Win")
+        return 1
     elif dealer.value < player.value <= 21:
         print("Win")
+        return 1
     elif player.value == dealer.value <= 21:
         print("Tie")
+        return 0
     elif player.value < dealer.value <= 21:
         print("Lose")
+        return -1
     else:
         print("Error: Missed case")
+        return 0
 
 
 if __name__ == '__main__':
@@ -163,14 +172,29 @@ if __name__ == '__main__':
     player = Hand("Player")
     dealer = Hand("Dealer")
 
-    for i in range(2):
-        dealer.add_card(deck.deal())
-        player.add_card(deck.deal())
+    play_game = 1
+    score = 0
+    while play_game == 1:
+        for i in range(2):
+            dealer.add_card(deck.deal())
+            player.add_card(deck.deal())
 
-    print("Dealer:", dealer.cards[0])
-    print(player)
+        print("Dealer:", dealer.cards[0])
+        print(player)
 
-    players_turn(dealer, player)
-    dealers_turn(dealer)
+        players_turn(dealer, player)
+        dealers_turn(dealer)
 
-    print_game_result(dealer, player)
+        score += print_game_result(dealer, player)
+
+        inp = ""
+        while inp == "":
+            inp = input("Deal another hand? [Y]es/[N]o: ")
+            if len(inp) != 0 and (inp[0].upper() == "Y"):
+                dealer.clear_hand()
+                player.clear_hand()
+            elif len(inp) != 0 and (inp[0].upper() == "N"):
+                play_game = 0
+                print(f"{score = }")
+            else:
+                inp = ""
