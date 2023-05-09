@@ -133,7 +133,7 @@ class Hand:
     def calc_hand(self):
         self.value = 0
 
-        aces = []
+        aces = 0
         for card in self.cards:
             rank = card[0]
             if rank in "TJQK":
@@ -141,13 +141,14 @@ class Hand:
             elif rank != "A":
                 self.value += int(rank)
             else:
-                aces.append(card)
+                aces += 1
 
-        for _ in aces:
-            if self.value >= 11:
-                self.value += 1
-            else:
-                self.value += 11
+        if aces > 0:
+            for i in range(aces, 0, -1):
+                if self.value + (i * 11) > 21:
+                    self.value += 1
+                else:
+                    self.value += 11
 
         if self.value > 21:
             self.bust = True
@@ -158,6 +159,8 @@ class Hand:
             self.pair = True
         else:
             self.pair = False
+
+        return self.value
 
 
 # def strategy_table(dealer: Hand, player: Hand):
