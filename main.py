@@ -24,6 +24,7 @@ class Table:
         return player
 
     def initial_deal(self):
+        self.del_hands()
         self.dealer.add_hand()
         for player in self.players:
             player.add_hand()
@@ -105,8 +106,7 @@ class Player:
         return hand
 
     def clear_hands(self):
-        for i in range(len(self.hands)):
-            del self.hands[i]
+        self.hands = []
 
 
 class Hand:
