@@ -41,12 +41,14 @@ class Table:
         for player in self.players:
             for hand in player.hands:
                 player_stands = False   # set to false for the loop:
+                if hand.blackjack:
+                    print(player.name, "got blackjack with ", hand)
                 while not (player_stands or hand.blackjack or hand.bust):
                     # loop until player 'stands'
                     if len(hand.cards) < 2:                         # if player splits, they'll only have one card
                         hand.add_card(self.shoe.deal())             # so deal a card to hand
                     print(player.name, hand)
-                    inp_string = "[h]it, [s]tand, [d]ouble"
+                    inp_string = ">> [h]it, [s]tand, [d]ouble"
                     if hand.pair: inp_string += ", S[p]lit"         # allow player to split cards if they have a pair
                     inp_string += " or [c]heat?: "
                     inp = input(inp_string)                         # get the player's move
@@ -55,8 +57,8 @@ class Table:
                     elif inp[0].upper() == "H":   # Hit
                         hand.add_card(self.shoe.deal())             # deal another card to the player's hand
                         if hand.bust or hand.blackjack:
-                            print(player.name, hand)
                             player_stands = True
+                            print(player.name, hand)
                     elif inp[0].upper() == "S":  # Stand
                         player_stands = True
                     elif inp[0].upper() == "D":  # Double down
@@ -111,7 +113,7 @@ class Table:
                 print(self.dealer.name, dealer_hand)
 
     def calc_game_result(self):
-        print("Results:")
+        print("_"*2, "Results:", "_"*2)
         dealer_hand = self.dealer.hands[0]
         print(self.dealer.name, dealer_hand)
         for player in self.players:
