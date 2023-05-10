@@ -48,31 +48,65 @@ class Table:
                     print(player.name, hand)
                     inp_string = "[h]it, [s]tand, [d]ouble"
                     if hand.pair: inp_string += ", S[p]lit"         # allow player to split cards if they have a pair
-                    inp_string += "?: "
+                    inp_string += " or [c]heat?: "
                     inp = input(inp_string)                         # get the player's move
-                    if len(inp) != 0 and (inp[0].upper() == "H"):   # Hit
+                    if len(inp) == 0:
+                        pass    # ensure a character is entered as input or re-loop
+                    elif inp[0].upper() == "H":   # Hit
                         hand.add_card(self.shoe.deal())             # deal another card to the player's hand
                         if hand.bust or hand.blackjack:
                             print(player.name, hand)
                             player_stands = True
-                    elif len(inp) != 0 and (inp[0].upper() == "S"):  # Stand
+                    elif inp[0].upper() == "S":  # Stand
                         player_stands = True
-                    elif len(inp) != 0 and (inp[0].upper() == "D"):  # Double down
+                    elif inp[0].upper() == "D":  # Double down
                         hand.add_card(self.shoe.deal())
                         print(player.name, hand)
                         player_stands = True
-                    elif hand.pair and len(inp) != 0 and (inp[0].upper() == "P"):  # Split
+                    elif hand.pair and inp[0].upper() == "P":  # Split
                         new_hand = player.add_hand()
                         new_hand.add_card(hand.cards.pop(1))
+                    elif inp[0].upper() == "C":  # Show Strategy
+                        self.get_strategy(dealer_hand, hand)
+
+    @staticmethod
+    def get_strategy(dealers_hand, players_hand):
+        df = pd.read_csv('Blackjack_strategy.csv', index_col=0)
+        # # print(df)
+        ranks = []
+        for card in players_hand.cards:
+            if card[0] in "JQK":
+                ranks.append("T")
+            else:
+                ranks.append(card[0])
+        ranks.sort()
+
+        dloc = dealers_hand.cards[0][0]
+        if dloc in "JQK":
+            dloc = "T"
+
+        ploc = ""
+        if players_hand.blackjack:
+            print("S")
+        elif len(players_hand.cards) == 2 and ranks[0] == ranks[1]:
+            ploc = ranks[0] + ranks[1]
+        elif len(players_hand.cards) == 2 and ranks[1] == "A":
+            ploc = ranks[1] + ranks[0]
+        else:
+            ploc = str(players_hand.value)
+
+        strat = df.loc[ploc][dloc]
+        print(f"{ploc} vs dealer's {dloc} = {ACTIONS[strat]}")
+        return strat
 
     def dealers_turn(self):
         dealer_hand = self.dealer.hands[0]  # Dealer only has one hand
         dealer_stands = False
         print(self.dealer.name, dealer_hand)
         while not (dealer_stands or dealer_hand.blackjack or dealer_hand.bust):
-            if dealer_hand.value >= 17:
+            if dealer_hand.value >= 17:   # dealer must stand with 17 or over
                 dealer_stands = True
-            elif dealer_hand.value < 17:
+            elif dealer_hand.value < 17:  # dealer must hit with less than 17
                 dealer_hand.add_card(self.shoe.deal())
                 print(self.dealer.name, dealer_hand)
 
@@ -198,37 +232,6 @@ class Hand:
             self.pair = False
 
         return self.value
-
-
-# def strategy_table(dealer: Hand, player: Hand):
-#     df = pd.read_csv('Blackjack_strategy.csv', index_col=0)
-#     # print(df)
-#     # if player has an ace
-#     ranks = []
-#     for card in player.cards:
-#         if card[0] in "JQK":
-#             ranks.append("T")
-#         else:
-#             ranks.append(card[0])
-#     ranks.sort()
-#
-#     dloc = dealer.cards[0][0]
-#     if dloc in "JQK":
-#         dloc = "T"
-#
-#     ploc = ""
-#     if player.blackjack:
-#         print("S")
-#     elif len(player.cards) == 2 and ranks[0] == ranks[1]:
-#         ploc = ranks[0] + ranks[1]
-#     elif len(player.cards) == 2 and ranks[1] == "A":
-#         ploc = ranks[1] + ranks[0]
-#     else:
-#         ploc = str(player.value)
-#
-#     strat = df.loc[ploc][dloc]
-#     print(f"{ploc} vs dealer's {dloc} = {STRATEGY_CODE[strat]}")
-#     return strat
 
 
 if __name__ == '__main__':
