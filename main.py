@@ -35,6 +35,17 @@ class Table:
                 for hand in player.hands:
                     hand.add_card(self.shoe.deal())
 
+    @staticmethod
+    def get_player_choice(hand):
+        inp_string = ">> [h]it, [s]tand, [d]ouble"
+        if hand.pair: inp_string += ", S[p]lit"  # allow player to split cards if they have a pair
+        inp_string += " or [c]heat?: "
+        inp = input(inp_string)  # get the player's move
+        if len(inp) == 0:
+            return ""
+        else:
+            return inp[0].upper()
+
     def play(self):
         dealer_hand = self.dealer.hands[0]  # Dealer only has one hand
         print(self.dealer.name, dealer_hand.cards[0])   # display dealer's first card
@@ -48,27 +59,22 @@ class Table:
                     if len(hand.cards) < 2:                         # if player splits, they'll only have one card
                         hand.add_card(self.shoe.deal())             # so deal a card to hand
                     print(player.name, hand)
-                    inp_string = ">> [h]it, [s]tand, [d]ouble"
-                    if hand.pair: inp_string += ", S[p]lit"         # allow player to split cards if they have a pair
-                    inp_string += " or [c]heat?: "
-                    inp = input(inp_string)                         # get the player's move
-                    if len(inp) == 0:
-                        pass    # ensure a character is entered as input or re-loop
-                    elif inp[0].upper() == "H":   # Hit
+                    choice = self.get_player_choice(hand)
+                    if choice == "H":   # Hit
                         hand.add_card(self.shoe.deal())             # deal another card to the player's hand
                         if hand.bust or hand.blackjack:
                             player_stands = True
                             print(player.name, hand)
-                    elif inp[0].upper() == "S":  # Stand
+                    elif choice == "S":  # Stand
                         player_stands = True
-                    elif inp[0].upper() == "D":  # Double down
+                    elif choice == "D":  # Double down
                         hand.add_card(self.shoe.deal())
                         print(player.name, hand)
                         player_stands = True
-                    elif hand.pair and inp[0].upper() == "P":  # Split
+                    elif hand.pair and choice == "P":  # Split
                         new_hand = player.add_hand()
                         new_hand.add_card(hand.cards.pop(1))
-                    elif inp[0].upper() == "C":  # Show Strategy
+                    elif choice == "C":  # Show Strategy
                         self.get_strategy(dealer_hand, hand)
 
     @staticmethod
@@ -239,7 +245,6 @@ class Hand:
 if __name__ == '__main__':
     game = Table()
     dave = game.add_player("Dave")
-    bob = game.add_player("Bob")
     game.initial_deal()
     game.play()
     game.dealers_turn()
