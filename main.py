@@ -170,9 +170,14 @@ class Deck:
             print("insufficient cards remaining")
 
 
-class Player:
+class Person:
     def __init__(self, name):
         self.name = name
+
+
+class Player(Person):
+    def __init__(self, name):
+        super().__init__(name)
         self.hands = []
 
     def add_hand(self):
@@ -182,6 +187,15 @@ class Player:
 
     def clear_hands(self):
         self.hands = []
+
+
+class Dealer(Person):
+    def __init__(self, name):
+        super().__init__(name)
+        self.hand = Hand()
+
+    def clear_hand(self):
+        self.hand = []
 
 
 class Hand:
