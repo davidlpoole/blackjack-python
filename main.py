@@ -37,14 +37,14 @@ class Table:
 
     @staticmethod
     def get_player_choice(hand):
-        inp_string = ">> [h]it, [s]tand, [d]ouble"
-        if hand.pair: inp_string += ", S[p]lit"  # allow player to split cards if they have a pair
-        inp_string += " or [c]heat?: "
-        inp = input(inp_string)  # get the player's move
-        if len(inp) == 0:
+        prompt = ">> [h]it, [s]tand, [d]ouble, "
+        prompt += "s[p]lit, " if hand.pair else ""  # allow player to split cards if they have a pair
+        prompt += "or [c]heat?: "
+        choice = input(prompt)  # get the player's move
+        if len(choice) == 0:
             return ""
         else:
-            return inp[0].upper()
+            return choice[0].upper()
 
     def play(self):
         dealer_hand = self.dealer.hands[0]  # Dealer only has one hand
@@ -80,7 +80,6 @@ class Table:
     @staticmethod
     def get_strategy(dealers_hand, players_hand):
         df = pd.read_csv('Blackjack_strategy.csv', index_col=0)
-        # # print(df)
         ranks = []
         for card in players_hand.cards:
             if card[0] in "JQK":
