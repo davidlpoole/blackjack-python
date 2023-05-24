@@ -1,5 +1,6 @@
 import random
 import pandas as pd
+from dataclasses import dataclass
 
 SUITS = ['♠', '♦', '♥', '♣']
 RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
@@ -82,13 +83,13 @@ class Table:
         df = pd.read_csv('Blackjack_strategy.csv', index_col=0)
         ranks = []
         for card in players_hand.cards:
-            if card[0] in "JQK":
+            if card.rank in "JQK":
                 ranks.append("T")
             else:
-                ranks.append(card[0])
+                ranks.append(card.rank)
         ranks.sort()
 
-        dloc = dealers_hand.cards[0][0]
+        dloc = dealers_hand.cards[0].rank
         if dloc in "JQK":
             dloc = "T"
 
@@ -143,6 +144,15 @@ class Table:
                     print("Error: Missed case")
 
 
+@dataclass
+class Card():
+    rank: str
+    suit: str
+
+    def __str__(self):
+        return f"{self.rank}{self.suit}"
+
+
 class Deck:
     def __init__(self, num_packs=1):
         self.cards = []
@@ -155,7 +165,7 @@ class Deck:
         for _ in range(num_packs):
             for suit in SUITS:
                 for rank in RANKS:
-                    self.cards.append((rank, suit))
+                    self.cards.append(Card(rank, suit))
 
     def shuffle(self):
         # randomise the cards in the list
@@ -212,7 +222,10 @@ class Hand:
 
     def __str__(self):
         self.calc_hand()
-        return f'{self.cards} = {self.value}'
+        return ', '.join([str(card) for card in self.cards]) + f' = {self.value}'
+
+    def __eq__(self, other):
+        return self.value == other.value
 
     def add_card(self, card):
         self.cards.append(card)
@@ -224,11 +237,10 @@ class Hand:
 
         aces = 0
         for card in self.cards:
-            rank = card[0]
-            if rank in "TJQK":      # Ten, Jack, Queen or King
+            if card.rank in "TJQK":      # Ten, Jack, Queen or King
                 self.value += 10
-            elif rank != "A":       # any number card except Ace
-                self.value += int(rank)
+            elif card.rank != "A":       # any number card except Ace
+                self.value += int(card.rank)
             else:
                 aces += 1           # count the aces
 
@@ -247,7 +259,7 @@ class Hand:
             self.blackjack = True
 
         # if 2 cards in hand, and both are the same rank, set the pair property to True
-        if len(self.cards) == 2 and self.cards[0][0] == self.cards[1][0]:
+        if len(self.cards) == 2 and self.cards[0].rank == self.cards[1].rank:
             self.pair = True
         else:
             self.pair = False
